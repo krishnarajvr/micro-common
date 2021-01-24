@@ -16,7 +16,7 @@ type Pagination struct {
 }
 
 func Paginator(c *gin.Context) Pagination {
-	var page model.Pagination
+	var page Pagination
 
 	// Define and get sorting field
 	page.Sort = c.DefaultQuery("sort", "ID")
