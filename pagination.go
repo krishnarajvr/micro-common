@@ -1,22 +1,15 @@
 package common
 
 import (
+	"micro/model"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-type Pagination struct {
-	Sort   string `json:"sort"`
-	Order  string `json:"order"`
-	Offset string `json:"offset"`
-	Limit  string `json:"limit"`
-	Search string `json:"search"`
-}
-
-func Paginator(c *gin.Context) Pagination {
-	var page Pagination
+func Paginator(c *gin.Context) model.Pagination {
+	var page model.Pagination
 
 	// Define and get sorting field
 	page.Sort = c.DefaultQuery("sort", "ID")
@@ -36,7 +29,7 @@ func Paginator(c *gin.Context) Pagination {
 	return page
 }
 
-func Paginate(page Pagination) func(db *gorm.DB) *gorm.DB {
+func Paginate(page model.Pagination) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 
 		limitNumber, _ := strconv.Atoi(page.Limit)

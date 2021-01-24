@@ -17,28 +17,30 @@ func LoggerToFile(filePath string, fileName string) gin.HandlerFunc {
 
 	logFile := path.Join(filePath, fileName)
 
-	src, err := os.OpenFile(logFile, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	// Create log folder
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		os.MkdirAll(filePath, 0700)
+	}
+
+	src, err := os.OpenFile(logFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+
 	if err != nil {
 		fmt.Println("err", err)
 	}
 
 	logger := logrus.New()
-
 	logger.Out = src
-
 	logger.SetLevel(logrus.DebugLevel)
+	logger.SetFormatter(&logrus.JSONFormatter{})
 
 	//Set rotatelogs
 	logWriter, err := rotatelogs.New(
 		//Split file name
 		fileName+".%Y%m%d.log",
-
 		//Generate soft chain, point to the latest log file
 		rotatelogs.WithLinkName(fileName),
-
 		//Set maximum save time (7 days)
 		rotatelogs.WithMaxAge(7*24*time.Hour),
-
 		//Set log cutting interval (1 day)
 		rotatelogs.WithRotationTime(24*time.Hour),
 	)
@@ -60,30 +62,15 @@ func LoggerToFile(filePath string, fileName string) gin.HandlerFunc {
 	logger.AddHook(lfHook)
 
 	return func(c *gin.Context) {
-		//Start time
 		startTime := time.Now()
 
-		//Set log file available in the context
 		c.Set("log", logger)
-
-		//Process request
 		c.Next()
 
-		//End time
 		endTime := time.Now()
-
-		//Execution time
-		latencyTime := endTime.Sub(startTime)
-
-		//Request method
 		reqMethod := c.Request.Method
-
-		reqURI := c.Request.RequestURI
-
-		// status code
+		latencyTime := endTime.Sub(startTime)
 		statusCode := c.Writer.Status()
-
-		// request IP
 		clientIP := c.ClientIP()
 
 		//Log format
@@ -92,7 +79,8 @@ func LoggerToFile(filePath string, fileName string) gin.HandlerFunc {
 			"latencyTime": latencyTime,
 			"clientIp":    clientIP,
 			"reqMethod":   reqMethod,
-			"reqUri":      reqURI,
+			"reqUri":      c.Request.RequestURI,
 		}).Info()
+
 	}
 }
