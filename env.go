@@ -1,9 +1,9 @@
 package common
 
 import (
-	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 )
@@ -11,12 +11,22 @@ import (
 func LoadEnv() {
 
 	dir, err := os.Getwd()
+	path := dir + "/.env"
+
 	if err != nil {
-		fmt.Print("Not able to get current working director")
+		log.Println("Not able to get current working director")
 	}
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		dir = filepath.Dir(dir)
+		path = dir + "/.env"
+	}
+
 	// loads values from .env into the system
-	if err := godotenv.Load(dir + "/.env"); err != nil {
-		fmt.Print("No .env file found")
+	log.Println("Loading variables from " + path)
+
+	if err := godotenv.Load(path); err != nil {
+		log.Println("No .env file found in path " + path)
 	}
 }
 
