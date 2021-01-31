@@ -36,9 +36,9 @@ func LoggerToFile(filePath string, fileName string) gin.HandlerFunc {
 	//Set rotatelogs
 	logWriter, err := rotatelogs.New(
 		//Split file name
-		fileName+".%Y%m%d.log",
+		logFile+".%Y%m%d.log",
 		//Generate soft chain, point to the latest log file
-		rotatelogs.WithLinkName(fileName),
+		rotatelogs.WithLinkName(logFile),
 		//Set maximum save time (7 days)
 		rotatelogs.WithMaxAge(7*24*time.Hour),
 		//Set log cutting interval (1 day)
