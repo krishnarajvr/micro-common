@@ -40,7 +40,7 @@ func SuccessPageResponse(c *gin.Context, key string, body interface{}, page inte
 }
 
 func BadRequest(c *gin.Context, errorData interface{}) {
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusBadRequest, gin.H{
 		"status": http.StatusBadRequest,
 		"data":   "",
 		"error":  errorData,
@@ -48,7 +48,7 @@ func BadRequest(c *gin.Context, errorData interface{}) {
 }
 
 func ErrorResponse(c *gin.Context, errorData *ErrorData) {
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusBadRequest, gin.H{
 		"status": http.StatusBadRequest,
 		"data":   "",
 		"error":  errorData,

@@ -3,7 +3,6 @@ package common
 import (
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 // GetMessages - Get the message based on the language
@@ -39,7 +38,7 @@ func ValidateForm(c *gin.Context, form interface{}) (status bool, errorData *Err
 		return true, nil
 	}
 
-	log := c.MustGet("log").(*logrus.Logger)
+	log := c.MustGet("log").(*MicroLog)
 
 	validation.MessageTmpls = GetMessages("en")
 	valid := validation.Validation{}
@@ -54,13 +53,13 @@ func ValidateForm(c *gin.Context, form interface{}) (status bool, errorData *Err
 	}
 
 	if !check {
-		log.Info("Validation error")
-		log.Info(check)
-		log.Info(valid.Errors)
+		log.Message("Validation error")
+		log.Message(check)
+		log.Message(valid.Errors)
 		errorDetails := make([]ErrorDetail, 0)
 
 		for _, err := range valid.Errors {
-			log.Info(err.Key, err.Message)
+			log.Message(err.Key + ":" + err.Message)
 			errorDetails = append(errorDetails,
 				ErrorDetail{
 					Code:    err.Key,

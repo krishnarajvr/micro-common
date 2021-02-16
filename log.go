@@ -5,6 +5,20 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type MicroLog struct {
+	C      *gin.Context
+	Fields map[string]interface{}
+	Log    *logrus.Logger
+	Level  string
+}
+
+//Log with context data
+func (ml MicroLog) Message(message interface{}) {
+	ml.Fields["sample"] = ml.C.Request.Header.Get("User-Agent")
+	//Log format
+	ml.Log.WithFields(ml.Fields).Info(message)
+}
+
 //Log with context data
 func Log(c *gin.Context, message string) {
 	log := c.MustGet("log").(*logrus.Logger)
@@ -12,14 +26,22 @@ func Log(c *gin.Context, message string) {
 	reqMethod := c.Request.Method
 	statusCode := c.Writer.Status()
 	clientIP := c.ClientIP()
-	tenantID, _ := c.Get("tenantId")
+	tenantID := c.Request.Header.Get("Tenantid")
+	domain := c.Request.Header.Get("Domain")
+	userAgent := c.Request.Header.Get("User-Agent")
+	traceID := c.Request.Header.Get("X-B3-Traceid")
+	spanID := c.Request.Header.Get("X-B3-Spanid")
 
 	//Log format
 	log.WithFields(logrus.Fields{
-		"statusCode": statusCode,
-		"clientIp":   clientIP,
-		"reqMethod":  reqMethod,
-		"reqUri":     c.Request.RequestURI,
-		"tenantId":   tenantID,
+		"domain":    domain,
+		"tenantId":  tenantID,
+		"status":    statusCode,
+		"userAgent": userAgent,
+		"traceId":   traceID,
+		"spanId":    spanID,
+		"ip":        clientIP,
+		"method":    reqMethod,
+		"uri":       c.Request.RequestURI,
 	}).Info(message)
 }
