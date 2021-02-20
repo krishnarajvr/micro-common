@@ -1,9 +1,6 @@
 package locale
 
 import (
-	"log"
-	"os"
-
 	"github.com/kataras/i18n"
 )
 
@@ -24,13 +21,8 @@ func (l *Locale) SetLang(langKey string) {
 }
 
 //New - Initilize the language
-func (l *Locale) New(langKey string, languages ...string) *Locale {
-	dir, err := os.Getwd()
-	if err != nil {
-		log.Print("Not able to get current working director")
-	}
-
-	I18n, err := i18n.New(i18n.Glob(dir+"/locale/*/*"), languages...)
+func (l *Locale) New(langKey string, langPath string, languages ...string) *Locale {
+	I18n, err := i18n.New(i18n.Glob(langPath), languages...)
 
 	if err != nil {
 		panic(err)
