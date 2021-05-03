@@ -1,10 +1,9 @@
 ## Common components across the microservices
 
-- This is used by https://github.com/krishnarajvr/microservice-mono-gin-gorm
-
-### Common Modules
+v1.0.0
 
 - Log format
 - Input structure
 - Output Structure
 - Validations and Errors common accross service
+- Multilanguage support
