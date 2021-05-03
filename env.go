@@ -22,9 +22,6 @@ func LoadEnv() {
 		path = dir + "/.env"
 	}
 
-	// loads values from .env into the system
-	log.Println("Loading variables from " + path)
-
 	if err := godotenv.Load(path); err != nil {
 		log.Println("No .env file found in path " + path)
 	}
