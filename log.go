@@ -1,22 +1,77 @@
 package common
 
 import (
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
 
 type MicroLog struct {
-	C      *gin.Context
-	Fields map[string]interface{}
-	Log    *logrus.Logger
-	Level  string
+	C          *gin.Context
+	Fields     map[string]interface{}
+	Log        *logrus.Logger
+	ContextLog *logrus.Entry
+	Level      string
 }
 
-//Log with context data
+func New(level string, fields map[string]interface{}) *MicroLog {
+	logger := logrus.New()
+	logger.SetOutput(os.Stdout)
+	logLevel, err := logrus.ParseLevel(level)
+
+	if err != nil {
+		logLevel, _ = logrus.ParseLevel("info")
+	}
+
+	logger.SetLevel(logLevel)
+	logger.SetFormatter(&logrus.JSONFormatter{})
+
+	return &MicroLog{
+		Fields:     fields,
+		Log:        logger,
+		ContextLog: logger.WithFields(fields),
+	}
+}
+
+func (ml MicroLog) SetField(key string, val interface{}) *MicroLog {
+	ml.Fields[key] = val
+	ml.ContextLog = ml.Log.WithFields(ml.Fields)
+	return &ml
+}
+
+func (ml MicroLog) Logger() *logrus.Entry {
+	return ml.Log.WithFields(ml.Fields)
+}
+
+//Message - log the message, deprecated
 func (ml MicroLog) Message(message interface{}) {
-	ml.Fields["sample"] = ml.C.Request.Header.Get("User-Agent")
-	//Log format
 	ml.Log.WithFields(ml.Fields).Info(message)
+}
+
+//Log with context - latest
+func (ml MicroLog) Info(m interface{}, message ...interface{}) {
+	ml.ContextLog.Info(m, message)
+}
+
+func (ml MicroLog) Debug(m interface{}, message ...interface{}) {
+	ml.ContextLog.Debug(m, message)
+}
+
+func (ml MicroLog) Warn(m interface{}, message ...interface{}) {
+	ml.ContextLog.Warn(m, message)
+}
+
+func (ml MicroLog) Error(m interface{}, message ...interface{}) {
+	ml.ContextLog.Error(m, message)
+}
+
+func (ml MicroLog) Fatal(m interface{}, message ...interface{}) {
+	ml.ContextLog.Fatal(m, message)
+}
+
+func (ml MicroLog) Panic(m interface{}, message ...interface{}) {
+	ml.ContextLog.Panic(m, message)
 }
 
 //Log with context data
