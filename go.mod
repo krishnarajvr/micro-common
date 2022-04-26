@@ -1,4 +1,4 @@
-module bitbucket.org/MarkEdwardTresidder/micro-common
+module github.com/krishnarajvr/micro-common
 
 go 1.15
 

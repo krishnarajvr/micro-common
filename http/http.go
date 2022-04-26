@@ -10,8 +10,8 @@ import (
 	"net/url"
 	"strings"
 
-	common "bitbucket.org/MarkEdwardTresidder/micro-common"
 	"github.com/gin-gonic/gin"
+	common "github.com/krishnarajvr/micro-common"
 )
 
 type IHttp interface {

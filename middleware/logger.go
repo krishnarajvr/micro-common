@@ -4,8 +4,8 @@ import (
 	"os"
 	"time"
 
-	common "bitbucket.org/MarkEdwardTresidder/micro-common"
 	"github.com/gin-gonic/gin"
+	common "github.com/krishnarajvr/micro-common"
 	"github.com/sirupsen/logrus"
 )
 
