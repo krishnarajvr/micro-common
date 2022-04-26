@@ -1,6 +1,10 @@
 ## Common components across the microservices
 
-- Log format
+Shared library that contain common codes
+
+Some of the featues are
+
+- Log formating
 - Input structure
 - Output Structure
 - Validations and Errors common accross service
