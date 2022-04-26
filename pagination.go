@@ -159,7 +159,7 @@ func parseOrder(order string, allowedFields map[string]interface{}) string {
 				orderBy = "DESC"
 			}
 
-			if _, ok := allowedFields[orderFieldSnake]; ok {
+			if value, ok := allowedFields[orderFieldSnake]; ok && value == "true" {
 				if orderString == "" {
 					orderString = orderFieldSnake + " " + orderBy
 				} else {
@@ -175,6 +175,19 @@ func parseOrder(order string, allowedFields map[string]interface{}) string {
 //Paginate - Do the db pagination query
 func Paginate(pagination Pagination) func(db *gorm.DB) *gorm.DB {
 	page := ValidPage(pagination, map[string]interface{}{})
+
+	return func(db *gorm.DB) *gorm.DB {
+		db = db.Offset(page.Offset - 1).Limit(page.Size)
+		if len(page.Order) > 0 {
+			db = db.Order(page.Order)
+		}
+
+		return db
+	}
+}
+
+func PaginateWithAllowedFields(pagination Pagination, allowedFields map[string]interface{}) func(db *gorm.DB) *gorm.DB {
+	page := ValidPage(pagination, allowedFields)
 
 	return func(db *gorm.DB) *gorm.DB {
 		db = db.Offset(page.Offset - 1).Limit(page.Size)
