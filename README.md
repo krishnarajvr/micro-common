@@ -9,4 +9,3 @@ Some of the featues are
 - Output Structure
 - Validations and Errors common accross service
 - Multilanguage support
-
